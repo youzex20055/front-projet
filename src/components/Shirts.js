@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetProshirtsQuery } from "../services/productService";
 import { Product } from "../pages/shop/product";
 import "../pages/shop/shop.css";
 
+// Separate Footer component
 const Footer = () => (
   <footer className="section__container footer__container" style={{ minHeight: "300px" }}>
     <div className="footer__col">
@@ -38,6 +39,65 @@ const Footer = () => (
   </footer>
 );
 
+// New JerseyTypeSelector component
+const JerseyTypeSelector = ({ currentImageIndex, setCurrentImageIndex, hasThirdKit }) => {
+  return (
+    <div className="jersey-type-selector">
+      <button 
+        className={`type-btn ${currentImageIndex === 0 ? 'active' : ''}`}
+        onClick={() => setCurrentImageIndex(0)}
+      >
+        HOME
+      </button>
+      <button 
+        className={`type-btn ${currentImageIndex === 1 ? 'active' : ''}`}
+        onClick={() => setCurrentImageIndex(1)}
+      >
+        AWAY
+      </button>
+      {hasThirdKit && (
+        <button 
+          className={`type-btn ${currentImageIndex === 2 ? 'active' : ''}`}
+          onClick={() => setCurrentImageIndex(2)}
+        >
+          THIRD
+        </button>
+      )}
+    </div>
+  );
+};
+
+// New ProductGrid component
+const ProductGrid = ({ products, currentImageIndex }) => {
+  const getImageUrl = (proshirt) => {
+    if (proshirt?.productImage?.length > 0) {
+      if (proshirt.productImage[currentImageIndex]) {
+        return `http://localhost:1337${proshirt.productImage[currentImageIndex].url}`;
+      }
+      return `http://localhost:1337${proshirt.productImage[0].url}`;
+    }
+    return `/assets/shirts/${proshirt.id}.jpg`;
+  };
+
+  return (
+    <div className="products">
+      {products?.map((proshirt) => (
+        <Product 
+          key={proshirt.id}
+          id={proshirt.id}
+          name={proshirt.productName}
+          price={proshirt.price}
+          image={getImageUrl(proshirt)}
+          productImage={proshirt.productImage}
+          size={proshirt.size}
+          color={proshirt.color}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Main Shirts component
 export const Shirts = () => {
   const { data, error, isLoading } = useGetProshirtsQuery();
 
@@ -47,13 +107,9 @@ export const Shirts = () => {
 
   const getImageUrl = (proshirt) => {
     if (proshirt?.productImage?.length > 0) {
-      const imageUrl = `http://localhost:1337${proshirt.productImage[0].url}`;
-      console.log("Image URL:", imageUrl);
-      return imageUrl;
+      return `http://localhost:1337${proshirt.productImage[0].url}`;
     }
-    const fallbackImage = `/assets/shirts/${proshirt.id}.jpg`;
-    console.warn("Using fallback image:", fallbackImage);
-    return fallbackImage;
+    return `/assets/shirts/${proshirt.id}.jpg`;
   };
 
   if (isLoading) return <div className="loading">Loading shirts...</div>;
@@ -64,7 +120,9 @@ export const Shirts = () => {
 
   return (
     <div className="shop">
-      <div className="shopTitle"></div>
+      <div className="shopTitle">
+        {/* Removed jersey type selector from here */}
+      </div>
       <div className="products">
         {data?.data?.map((proshirt) => (
           <Product 
@@ -73,6 +131,9 @@ export const Shirts = () => {
             name={proshirt.productName}
             price={proshirt.price}
             image={getImageUrl(proshirt)}
+            productImage={proshirt.productImage}
+            size={proshirt.size}
+            color={proshirt.color}
           />
         ))}
       </div>

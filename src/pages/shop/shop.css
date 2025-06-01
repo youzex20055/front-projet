@@ -52,3 +52,44 @@
   cursor: pointer;
 }
 
+
+.brands__container {
+  padding: 0; /* Removed padding to decrease height above and below */
+}
+
+.brand__image {
+  margin: 0; /* Removed margin to control spacing around each image */
+}
+
+/* Ensure images are displayed inline */
+/* Align images vertically */
+
+.jersey-type-selector {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.type-btn {
+  padding: 0.8rem 2rem;
+  border: 2px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.type-btn:hover {
+  border-color: #333;
+}
+
+.type-btn.active {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+/* Align images vertically */
+
+

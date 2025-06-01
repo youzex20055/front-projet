@@ -106,8 +106,9 @@ export const Shop = () => {
           <img src="/assets/products/kappa.jpg" alt="brand" />
         </div>
         <div className="brand__image">
-          <img src="/assets/products/macron.jpg" alt="brand" />
+          <img src="/assets/products/mizo.png" alt="brand" />
         </div>
+        
       </section>
       <Footer />
     </div>

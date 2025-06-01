@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { useLocation } from 'react-router-dom';
 
 export const productApi = createApi({
   reducerPath: 'productApi',
@@ -20,16 +21,27 @@ export const productApi = createApi({
     }),
     getProacc: builder.query({
       query: () => 'proaccs?populate=*',
-      transformResponse: (response) => {
-        console.log('Accessories Response:', response);
-        return response;
-      },
     }),
   }),
 });
 
 export const { 
-  useGetProductsQuery, 
+  useGetProductsQuery,
   useGetProshirtsQuery,
-  useGetProaccQuery 
+  useGetProaccQuery
 } = productApi;
+
+// Import useLocation from react-router-dom
+export const useCustomProductsQuery = () => {
+  const location = useLocation();
+  const isShirts = location.pathname.toLowerCase().includes("proshirt");
+  
+  return createApi({
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:1337/api/' }),
+    endpoints: (builder) => ({
+      getProducts: builder.query({
+        query: () => isShirts ? 'proshirts?populate=*' : 'products?populate=*',
+      }),
+    }),
+  });
+};

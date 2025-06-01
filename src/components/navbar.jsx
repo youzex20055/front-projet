@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "phosphor-react";
 import { FaAddressBook } from "react-icons/fa";
 import { CiUser, CiSearch } from "react-icons/ci";
+import { ShopContext } from "../context/shop-context"; // Updated import path
 import "./navbar.css";
 
 export const Navbar = () => {
+  const { cartItems } = useContext(ShopContext); // Access cartItems from context
+
+  // Calculate total items in cart
+  const totalItemsInCart = Object.values(cartItems).reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <div>
       <nav className="section__container nav__container">
@@ -23,8 +29,11 @@ export const Navbar = () => {
           <Link to="/signin">
             <span><CiUser size={32} /></span>
           </Link>
-          <Link to="/cart">
+          <Link to="/cart" className="relative">
             <span><ShoppingCart size={32} /></span>
+            {totalItemsInCart > 0 && (
+              <span className="cart-badge">{totalItemsInCart}</span>
+            )}
           </Link>
         </div>
       </nav>

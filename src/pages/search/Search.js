@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useGetProductsQuery } from "../../services/productService";
-import { useGetProshirtsQuery } from "../../services/productService";
-import { useGetProaccQuery } from "../../services/productService";
+import { useGetProductsQuery, useGetProshirtsQuery, useGetProaccQuery } from "../../services/productService";
 import { Product } from "../shop/product";
 import "./search.css";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   
   const { data: products } = useGetProductsQuery();
   const { data: shirts } = useGetProshirtsQuery();
@@ -18,8 +17,25 @@ const Search = () => {
     const shirtsData = shirts?.data || [];
     const accessoriesData = accessories?.data || [];
     
-    setAllProducts([...productsData, ...shirtsData, ...accessoriesData]);
+    // Remove duplicates by using a Map with product IDs as keys
+    const uniqueProducts = new Map();
+    [...productsData, ...shirtsData, ...accessoriesData].forEach(product => {
+      if (!uniqueProducts.has(product.id)) {
+        uniqueProducts.set(product.id, product);
+      }
+    });
+    
+    const combinedProducts = Array.from(uniqueProducts.values());
+    setAllProducts(combinedProducts);
+    setFilteredProducts(combinedProducts);
   }, [products, shirts, accessories]);
+
+  useEffect(() => {
+    const searchResults = allProducts.filter(product =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    );
+    setFilteredProducts(searchResults);
+  }, [searchTerm, allProducts]);
 
   const getImageUrl = (product) => {
     if (product?.productImage?.length > 0) {
@@ -27,10 +43,6 @@ const Search = () => {
     }
     return `/assets/products/${product.id}.jpg`;
   };
-
-  const filteredProducts = allProducts.filter((product) =>
-    product.productName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="search-page">
@@ -42,7 +54,6 @@ const Search = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
-            
           />
           <div className="search-trace"></div>
       </div>
@@ -66,4 +77,3 @@ const Search = () => {
 };
 
 export default Search;
-
